@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 import os
 from pathlib import Path
 import environ
+import dj_database_url
 
 env = environ.Env(
     DEBUG=(bool, False)
@@ -31,12 +32,13 @@ EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': os.getenv("DB_NAME", "hauscrm"),
-        'USER': os.getenv("DB_USER", "hauscrmuser"),
-        'PASSWORD': os.getenv("DB_PASSWORD", "your_password"),
-        'HOST': os.getenv("DB_HOST", "localhost"),  # Ensure no brackets or extra characters
-        'PORT': os.getenv("DB_PORT", "5432"),
+        'default': dj_database_url.config(default=os.environ.get('DATABASE_URL'))
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv('DB_NAME', 'your_db_name'),
+        'USER': os.getenv('DB_USER', 'your_db_user'),
+        'PASSWORD': os.getenv('DB_PASSWORD', 'your_db_password'),
+        'HOST': os.getenv('DB_HOST', 'localhost'),
+        'PORT': os.getenv('DB_PORT', '5432'),
     }
 }
 
@@ -158,7 +160,7 @@ STATICFILES_DIRS = [
 ]
 
 # Directory where static files will be collected during deployment
-STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 # Configure WhiteNoise for serving static files in production
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
