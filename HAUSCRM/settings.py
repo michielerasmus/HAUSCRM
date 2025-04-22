@@ -30,19 +30,26 @@ SECRET_KEY = env('SECRET_KEY')  # This should read the SECRET_KEY from the .env
 EMAIL_HOST_USER = env('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
 
+ALLOWED_HOSTS = [
+    os.environ.get("RENDER_EXTERNAL_HOSTNAME", "localhost"),
+    "127.0.0.1"
+]
+
+# Database configuration
 DATABASES = {
-    'default': {
-        'default': dj_database_url.config(default=os.environ.get('DATABASE_URL'))
+    'default': dj_database_url.config(
+        default=os.environ.get('DATABASE_URL', f'sqlite:///{BASE_DIR / "db.sqlite3"}'),
+        conn_max_age=600,
+        ssl_require=True
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': os.getenv('DB_NAME', 'your_db_name'),
         'USER': os.getenv('DB_USER', 'your_db_user'),
         'PASSWORD': os.getenv('DB_PASSWORD', 'your_db_password'),
         'HOST': os.getenv('DB_HOST', 'localhost'),
         'PORT': os.getenv('DB_PORT', '5432'),
-    }
+    )
 }
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1'] 
 
 
 # Application definition
