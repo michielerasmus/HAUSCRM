@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<section class="text-gray-600 body-font">
+    <div class="container mx-auto px-5 py-6 flex justify-between items-center border-b border-gray-200">
+        <h1 class="text-4xl font-bold text-gray-800">Leads</h1>
+        <div class="flex flex-col items-end">
+            <a href="{% url 'leads:lead-create' %}"
+               class="bg-red-700 text-white px-4 py-2 rounded-lg hover:bg-gray-400 transition mb-2">
+                Create Lead
+            </a>
+            <a href="{% url 'leads:upload-leads' %}"
+               class="bg-red-700 text-white px-4 py-2 rounded-lg hover:bg-gray-400 transition">
+                Upload Leads
+            </a>
+        </div>
+    </div>
+
+    <div class="container mx-auto px-5 py-6 bg-gray-100 rounded-lg flex justify-between items-center">
+        <form method="GET" class="flex flex-wrap items-center">
+            <input type="text" name="search" placeholder="Search Leads"
+                   value="{{ request.GET.search }}" class="p-2 border rounded-lg mr-2">
+            
+            <input type="date" name="follow_up_date" value="{{ request.GET.follow_up_date }}" class="p-2 border rounded-lg mr-2">
+
+            <select name="status" class="p-2 border rounded-lg mr-2">
+                <option value="">All Leads</option>
+                <option value="New Lead" {% if request.GET.status == "New Lead" %}selected{% endif %}>New Lead</option>
+                <option value="Follow Up" {% if request.GET.status == "Follow Up" %}selected{% endif %}>Follow Up</option>
+                <option value="Schedule Appointment" {% if request.GET.status == "Schedule Appointment" %}selected{% endif %}>Schedule Appointment</option>
+                <option value="Lead Won" {% if request.GET.status == "Lead Won" %}selected{% endif %}>Lead Won</option>
+                <option value="Lead Lost" {% if request.GET.status == "Lead Lost" %}selected{% endif %}>Lead Lost</option>
+            </select>
+            
+            <button type="submit" class="bg-red-700 text-white px-4 py-2 rounded-lg hover:bg-gray-400 transition">
+                Filter
+            </button>
+        </form>
+
+        <a href="{% url 'leads:export-excel' %}"
+           class="bg-gray-200 px-4 py-2 rounded-lg hover:bg-gray-400 transition">
+            Export to Excel
+        </a>
+    </div>
+
+    <div class="container px-5 py-12 mx-auto">
+        <h2 class="text-2xl font-bold text-gray-800 mb-6">Active Leads</h2>
+        <div class="overflow-x-auto">
+            <table class="min-w-full leading-normal">
+                <thead>
+                    <tr>
+                        <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Name</th>
+                        <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Details</th>
+                        <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Status</th>
+                        <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Address</th>
+                        <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Phone</th>
+                        <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Contacted</th>
+                        {% if request.user.is_organisor %}
+                        <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Agent</th>
+                        {% endif %}
+                        <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for lead in active_leads %}
+                    <tr>
+                        <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">{{ lead.name }}</td>
+                        <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                            {% if lead.detail %} {{ lead.detail|truncatechars:50 }} {% endif %}
+                        </td>
+                        <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">{{ lead.status }}</td>
+                        <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">{{ lead.address }}, {{ lead.area }}, {{ lead.city }}</td>
+                        <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">{{ lead.phone_number }}</td>
+                        <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">{{ lead.contacted|yesno:"Yes,No" }}</td>
+                        {% if request.user.is_organisor %}
+                        <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">{{ lead.agent }}</td>
+                        {% endif %}
+                        <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                            <a href="{% url 'leads:lead-detail' lead.pk %}" class="text-red-700 hover:underline">View</a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td class="px-5 py-5 text-gray-700 text-lg" colspan="{% if request.user.is_organisor %}7{% else %}6{% endif %}">No Active Leads</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="container px-5 py-12 mx-auto">
+        <h2 class="text-2xl font-bold text-gray-800 mb-6">Lost Leads</h2>
+        <div class="overflow-x-auto">
+            <table class="min-w-full leading-normal">
+                <thead>
+                    <tr>
+                        <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Name</th>
+                        <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Detail</th>
+                        <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Phone</th>
+                        {% if request.user.is_organisor %}
+                        <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Agent</th>
+                        {% endif %}
+                        <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for lead in lost_leads %}
+                    <tr>
+                        <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">{{ lead.name }}</td>
+                        <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">{% if lead.detail %} {{ lead.detail|truncatechars:50 }} {% endif %}</td>
+                        <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">{{ lead.phone_number }}</td>
+                        {% if request.user.is_organisor %}
+                        <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">{{ lead.agent }}</td>
+                        {% endif %}
+                        <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                            <a href="{% url 'leads:lead-detail' lead.pk %}" class="text-red-700 hover:underline">View</a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td class="px-5 py-5 text-gray-700 text-lg" colspan="{% if request.user.is_organisor %}5{% else %}4{% endif %}">No Lost Leads</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</section>
+
+{% endblock content %}

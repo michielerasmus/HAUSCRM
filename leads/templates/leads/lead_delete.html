@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1 class="text-2xl font-bold mb-4">Delete Lead</h1>
+    
+    <form method="post" class="bg-white p-6 rounded-lg shadow-md max-w-lg mx-auto">
+        Are you sure you want to delete lead: {{ lead.name }}?
+        {% csrf_token %}
+        {{ form.as_p }}
+        <hr class="my-4" />
+        <div class="flex justify-between">
+            <a href="{% url 'leads:lead-detail' lead.pk %}" 
+               class="text-gray-700 bg-gray-300 border-0 py-2 px-6 rounded-lg hover:bg-red-700 transition">
+                Back
+            </a>
+            <button type="submit" 
+                    class="text-white bg-red-700 border-0 py-2 px-6 rounded-lg hover:bg-gray-300 transition">
+                Delete
+            </button>
+        </div>
+    </form>
+{% endblock content %}

@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<section class="text-gray-600 body-font overflow-hidden flex items-center justify-center h-screen">
+    <div class="container px-5 py-12 mx-auto">
+      <div class="lg:w-3/5 mx-auto bg-white p-8 rounded-lg shadow-md">
+        <h1 class="text-gray-900 text-3xl title-font font-medium text-center mb-4">
+         Sale Details: {{ sale.address }}
+        </h1>
+
+        <p class="leading-relaxed mb-4 text-red-700 text-center text-lg font-bold">
+          {% if sale.sale_price is not None and sale.sale_price != '' %}
+          Sold: R {{ sale.sale_price }}
+          {% else %}
+          For Sale: R {{ sale.listing_price }}
+          {% endif %}
+        </p>
+
+        <div class="space-y-2 text-center">
+          <p class="text-gray-500"><strong>Address:</strong> <span class="text-gray-900">{{ sale.address }}, {{ sale.area }}, {{ sale.city }}</span></p>
+          <p class="leading-relaxed text-base"><strong>Commission:</strong> {{ sale.commission_percentage }}%</p>
+          <p class="text-gray-500"><strong>Property Type:</strong> <span class="text-gray-900">{{ sale.property_type }}</span></p>
+          <p class="text-gray-500"><strong>Mandate Type:</strong> <span class="text-gray-900">{{ sale.mandate_type }}</span></p>
+          <p class="text-gray-500"><strong>Listing Date:</strong> <span class="text-gray-900">{{ sale.date_listed }}</span></p>
+          <p class="text-gray-500"><strong>Mandate Expiry:</strong> <span class="text-gray-900">{{ sale.mandate_expiry }}</span></p>
+          
+          {% if sale.date_sold %}
+          <p class="text-gray-500"><strong>Date Sold:</strong> <span class="text-gray-900">{{ sale.date_sold }}</span></p>
+          {% endif %}
+            
+          {% if sale.seller_1 %}
+          <p class="leading-relaxed text-base"><strong>Seller 1:</strong> {{ sale.seller_1 }}</p>
+          {% endif %}
+          
+          {% if sale.seller_2 %}
+              <p class="leading-relaxed text-base"><strong>Seller 2:</strong> {{ sale.seller_2 }}</p>
+          {% endif %}
+          
+          {% if sale.buyer_1 %}
+              <p class="leading-relaxed text-base"><strong>Buyer 1:</strong> {{ sale.buyer_1 }}</p>
+          {% endif %}
+          
+          {% if sale.buyer_2 %}
+              <p class="leading-relaxed text-base"><strong>Buyer 2:</strong> {{ sale.buyer_2 }}</p>
+          {% endif %}
+
+          {% if request.user.is_organisor %}
+            <p class="leading-relaxed text-base"><strong>Agent:</strong> {{ sale.agent }}</p>
+          {% endif %}
+        </div>
+
+        <div class="flex justify-center mt-6 space-x-4">
+          <a href="{% url 'sales:sale-list' %}" class="text-white bg-red-700 py-2 px-6 rounded-lg hover:bg-gray-400 transition">
+            Back
+          </a>
+          <a href="{% url 'sales:sale-update' sale.pk %}" class="text-white bg-red-700 py-2 px-6 rounded-lg hover:bg-gray-400 transition">
+            Update
+          </a>
+          <a href="{% url 'sales:sale-delete' sale.pk %}" class="text-white bg-black py-2 px-6 rounded-lg hover:bg-red-700 transition">
+            Delete
+          </a>
+        </div>
+      </div>
+    </div>
+</section>
+
+{% endblock content %}

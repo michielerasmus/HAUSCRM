@@ -1,0 +1,267 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<section class="py-32">
+    <div class="container">
+        <h1 class="text-center text-4xl text-red-700 font-semibold lg:text-6xl">
+            Welcome to your HAUS Properties Dashboard!
+        </h1>
+        <div class="grid gap-6 pt-9 text-center md:grid-cols-2 lg:grid-cols-4 lg:pt-20">
+            <div class="rounded-lg border text-card-foreground shadow-sm border-none bg-zinc-100 p-8 lg:p-10">
+                <p class="mb-1 flex items-center justify-center text-2xl font-semibold lg:text-3xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                         class="lucide lucide-arrow-up mr-1 h-8">
+                        <path d="m5 12 7-7 7 7"></path>
+                        <path d="M12 19V5"></path>
+                    </svg>Clients
+                </p>
+                <p class="text-zinc-600">
+                    <p class="text-lg">Total Clients: <span class="font-semibold">{{ total_clients }}</span></p>
+                    {% if upcoming_birthdays %}
+                        <h3 class="text-xl font-semibold text-gray-800 mt-4 mb-2">Upcoming Birthdays (Next 7 Days)</h3>
+                        <ul class="list-disc list-inside">
+                            {% for client in upcoming_birthdays %}
+                                <li class="text-base">{{ client.name }}: {{ client.birthday|date:"d M" }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </p>
+            </div>
+            <div class="rounded-lg border text-card-foreground shadow-sm border-none bg-zinc-100 p-8 lg:p-10">
+                <p class="mb-1 flex items-center justify-center text-2xl font-semibold lg:text-3xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                         class="lucide lucide-arrow-up mr-1 h-8">
+                        <path d="m5 12 7-7 7 7"></path>
+                        <path d="M12 19V5"></path>
+                    </svg>Leads
+                </p>
+                <p class="text-zinc-600">
+                    <p class="text-lg">Total Leads: <span class="font-semibold">{{ total_leads }}</span></p>
+                    <p class="text-lg">Active Leads: <span class="font-semibold">{{ active_leads }}</span></p>
+                    <p class="text-lg">Lost Leads: <span class="font-semibold">{{ lost_leads }}</span></p>
+                    {% if leads_next_7_days|length > 0 or leads_follow_up_today|length > 0 %}
+                        <h3 class="text-xl font-semibold text-gray-800 mt-4 mb-2">Leads Follow-up (Next 7 Days)</h3>
+                        <ul class="list-disc list-inside">
+                            {% for lead in leads_next_7_days %}
+                                <li class="text-base">{{ lead.name|default:"-" }}: {{ lead.follow_up_date|date:"d M Y" }}</li>
+                            {% endfor %}
+                        </ul>
+                        <h3 class="text-xl font-semibold text-gray-800 mt-4 mb-2">Leads Follow-up Today</h3>
+                        <ul class="list-disc list-inside">
+                            {% for lead in leads_follow_up_today %}
+                                <li class="text-base">{{ lead.name|default:"-" }}: {{ lead.follow_up_date|date:"d M Y" }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </p>
+            </div>
+            <div class="rounded-lg border text-card-foreground shadow-sm border-none bg-zinc-100 p-8 lg:p-10">
+                <p class="mb-1 flex items-center justify-center text-2xl font-semibold lg:text-3xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                         class="lucide lucide-arrow-up mr-1 h-8">
+                        <path d="m5 12 7-7 7 7"></path>
+                        <path d="M12 19V5"></path>
+                    </svg>Sales
+                </p>
+                <p class="text-zinc-600">
+                    <p class="text-lg">Total Sales: <span class="font-semibold">{{ total_sales }}</span></p>
+                    <p class="text-lg">For Sale: <span class="font-semibold">{{ for_sale_sales_count }}</span></p>
+                    <p class="text-lg">Sold: <span class="font-semibold">{{ sold_sales_count }}</span></p>
+                    <p class="text-lg">Total Listed Value: <span class="font-semibold">R {{ total_listed_sales_value }}</span></p>
+                    <p class="text-lg">Total Sold Value: <span class="font-semibold">R {{ total_sold_sales_value }}</span></p>
+                    <p class="text-lg">Average Days on Market: <span class="font-semibold">{{ average_days_on_market_sales|floatformat:2 }}</span></p>
+                    <p class="text-lg">Average Price Drop: <span class="font-semibold">{{ average_price_drop_sales|floatformat:2 }}%</span></p>
+                
+                    {% if expiring_sales_30_days %}
+    <div class="mt-4 pt-4 border-t border-gray-200">
+        <h3 class="text-xl font-semibold text-gray-800 mb-2">Expiring Sales Mandates</h3>
+        <ul class="list-disc list-inside">
+            {% for sale in expiring_sales_30_days %}
+                <li class="text-base">
+                    {{ sale.address }}
+                    {% if user.is_organisor %}
+                        (Agent: {{ sale.agent.user.username|default:"Unassigned" }})
+                    {% endif %}
+                    {{ sale.mandate_expiry|date:"d M Y" }}
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endif %}            
+</div>
+            <div class="rounded-lg border text-card-foreground shadow-sm border-none bg-zinc-100 p-8 lg:p-10">
+                <p class="mb-1 flex items-center justify-center text-2xl font-semibold lg:text-3xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                         class="lucide lucide-arrow-up mr-1 h-8">
+                        <path d="m5 12 7-7 7 7"></path>
+                        <path d="M12 19V5"></path>
+                    </svg>Rentals
+                </p>
+                <p class="text-zinc-600">
+                    <p class="text-lg">Total Rentals: <span class="font-semibold">{{ total_rentals }}</span></p>
+                    <p class="text-lg">For Rental: <span class="font-semibold">{{ for_rental_rentals_count }}</span></p>
+                    <p class="text-lg">Managing: <span class="font-semibold">{{ managing_rentals_count }}</span></p>
+                    <p class="text-lg">Closed: <span class="font-semibold">{{ closed_rentals_count }}</span></p>
+                    <p class="text-lg">Total Listed Value: <span class="font-semibold">R {{ total_listed_rentals_value }}</span></p>
+                    <p class="text-lg">Total Rented Value: <span class="font-semibold">R {{ total_rented_rentals_value }}</span></p>
+                    <p class="text-lg">Average Days on Market: <span class="font-semibold">{{ average_days_on_market_rentals|floatformat:2 }}</span></p>
+                    <p class="text-lg">Average Price Drop: <span class="font-semibold">{{ average_price_drop_rentals|floatformat:2 }}%</span></p>
+
+                    {% if expiring_rentals_30_days %}
+                        <div class="mt-4 pt-4 border-t border-gray-200">
+                            <h3 class="text-xl font-semibold text-gray-800 mb-2">Expiring Rentals</h3>
+                            <ul class="list-disc list-inside">
+                                {% for rental in expiring_rentals_30_days %}
+                                    <li class="text-base">
+                                        {{ rental.address }} 
+                                        {% if user.is_organisor %}
+                                            ({{ rental.agent.user.username|default:"Unassigned" }})
+                                            {% endif %}:
+                                        {{ rental.rental_expiry|date:"d M Y" }}
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
+                    {% if expiring_rental_mandates_30_days %}
+    <div class="mt-4 pt-4 border-t border-gray-200">
+        <h3 class="text-xl font-semibold text-gray-800 mb-2">Expiring Rental Mandates</h3>
+        <ul class="list-disc list-inside">
+            {% for mandate in expiring_rental_mandates_30_days %}
+                <li class="text-base">
+                    {{ mandate.address }} 
+                    {% if user.is_organisor %}
+                         ({{ mandate.agent.user.username|default:"Unassigned" }})
+                    {% endif %}
+                    {{ mandate.mandate_expiry|date:"d M Y" }}
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endif %}
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<hr />
+
+{% if user.is_organisor %}
+<section class="py-32">
+    <div class="container">
+        <h1 class="text-center text-4xl text-red-700 font-semibold lg:text-6xl">
+            Agent and Area Statistics
+        </h1>
+        <div class="grid gap-6 pt-9 text-center md:grid-cols-1 lg:grid-cols-2 lg:pt-20">
+            <div class="rounded-lg border text-card-foreground shadow-sm border-none bg-zinc-100 p-8 lg:p-10">
+                <p class="mb-1 flex items-center justify-center text-2xl font-semibold lg:text-3xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                         class="lucide lucide-arrow-up mr-1 h-8">
+                        <path d="m5 12 7-7 7 7"></path>
+                        <path d="M12 19V5"></path>
+                    </svg>Agent Statistics
+                </p>
+                <p class="text-zinc-600">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <h3 class="text-xl font-semibold text-gray-800 mb-2">Leads by Agent</h3>
+                            <ul class="list-disc list-inside">
+                                {% for agent_data in leads_by_agent %}
+                                    <li class="text-base">{{ agent_data.agent__user__username|default:"Unassigned" }}: <span class="font-medium">{{ agent_data.count }}</span></li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        
+                        <div class="col-md-3">
+                            <h3 class="text-xl font-semibold text-gray-800 mb-2">Clients by Agent</h3>
+                            <ul class="list-disc list-inside">
+                                {% for agent_data in clients_by_agent %}
+                                    <li class="text-base">{{ agent_data.agent__user__username|default:"Unassigned" }}: <span class="font-medium">{{ agent_data.count }}</span></li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        
+                        <div class="col-md-3">
+                            <h3 class="text-xl font-semibold text-gray-800 mb-2">Rentals by Agent</h3>
+                            <ul class="list-disc list-inside">
+                                {% for agent_data in rentals_by_agent %}
+                                    <li class="text-base">{{ agent_data.agent__user__username|default:"Unassigned" }}: <span class="font-medium">{{ agent_data.count }}</span></li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        
+                        <div class="col-md-3">
+                            <h3 class="text-xl font-semibold text-gray-800 mb-2">Sales by Agent</h3>
+                            <ul class="list-disc list-inside">
+                                {% for agent_data in sales_by_agent %}
+                                    <li class="text-base">{{ agent_data.agent__user__username|default:"Unassigned" }}: <span class="font-medium">{{ agent_data.count }}</span></li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="row mt-4">
+                        <div class="col-md-6">
+                            <h3 class="text-xl font-semibold text-gray-800 mb-2">Sales Value by Agent</h3>
+                            <ul class="list-disc list-inside">
+                                {% for agent_data in sales_value_by_agent %}
+                                    <li class="text-base">{{ agent_data.agent__user__username|default:"Unassigned" }}: Listed: <span class="font-medium">{{ agent_data.total_listed|default:"0" }}</span>, Sold: <span class="font-medium">{{ agent_data.total_sold|default:"0" }}</span></li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h3 class="text-xl font-semibold text-gray-800 mb-2">Rentals Value by Agent</h3>
+                            <ul class="list-disc list-inside">
+                                {% for agent_data in rentals_value_by_agent %}
+                                    <li class="text-base">{{ agent_data.agent__user__username|default:"Unassigned" }}: Listed: <span class="font-medium">{{ agent_data.total_listed|default:"0" }}</span>, Rented: <span class="font-medium">{{ agent_data.total_rented|default:"0" }}</span></li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </p>
+            </div>
+            <div class="rounded-lg border text-card-foreground shadow-sm border-none bg-zinc-100 p-8 lg:p-10">
+                <p class="mb-1 flex items-center justify-center text-2xl font-semibold lg:text-3xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                         class="lucide lucide-arrow-up mr-1 h-8">
+                        <path d="m5 12 7-7 7 7"></path>
+                        <path d="M12 19V5"></path>
+                    </svg>Area Statistics
+                </p>
+                <p class="text-zinc-600">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h3 class="text-xl font-semibold text-gray-800 mb-2">Sales Value by Area</h3>
+                            <ul class="list-disc list-inside">
+                                {% for area_data in sales_value_by_area %}
+                                    <li class="text-base">{{ area_data.area|default:"Unknown Area" }}: Listed: <span class="font-medium">{{ area_data.total_listed|default:"0" }}</span>, Sold: <span class="font-medium">{{ area_data.total_sold|default:"0" }}</span></li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h3 class="text-xl font-semibold text-gray-800 mb-2">Rentals Value by Area</h3>
+                            <ul class="list-disc list-inside">
+                                {% for area_data in rentals_value_by_area %}
+                                    <li class="text-base">{{ area_data.area|default:"Unknown Area" }}: Listed: <span class="font-medium">{{ area_data.total_listed|default:"0" }}</span>, Rented: <span class="font-medium">{{ area_data.total_rented|default:"0" }}</span></li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endif %}
+
+{% endblock %}

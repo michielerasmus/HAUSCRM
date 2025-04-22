@@ -1,0 +1,50 @@
+<!-- lead_detail.html -->
+{% extends "base.html" %}
+
+{% block content %}
+
+<section class="text-gray-600 body-font overflow-hidden flex items-center justify-center h-screen">
+    <div class="container px-5 py-12 mx-auto">
+      <div class="lg:w-3/5 mx-auto bg-white p-8 rounded-lg shadow-md">
+        <h1 class="text-gray-900 text-3xl title-font font-medium text-center mb-4">
+         Lead Details: {{ lead.name }}
+        </h1>
+
+        <p class="leading-relaxed mb-4 text-red-700 text-center text-lg font-bold">{{ lead.detail }}</p>
+
+        <div class="space-y-2 text-center">
+          <p class="text-gray-500"><strong>Address:</strong> <span class="text-gray-900">{{ lead.address }}, {{ lead.area }}, {{ lead.city }}</span></p>
+          <p class="text-gray-500"><strong>Email:</strong> <span class="text-gray-900">{{ lead.email }}</span></p>
+          <p class="text-gray-500"><strong>Phone:</strong> <span class="text-gray-900">{{ lead.phone_number }}</span></p>
+          <p class="text-gray-500"><strong>Status:</strong> <span class="text-gray-900">{{ lead.status }}</span></p>
+          <p class="text-gray-500"><strong>Source:</strong> <span class="text-gray-900">{{ lead.source }}</span></p>
+          <p class="text-gray-500"><strong>Contacted:</strong> <span class="text-gray-900">{{ lead.contacted|yesno:"Yes,No" }}</span></p>
+          <p class="text-gray-500"><strong>Follow up on:</strong> <span class="text-gray-900">{{ lead.follow_up_date }}</span></p>
+          {% if request.user.is_organisor %}
+            <p class="text-gray-500"><strong>Created:</strong> <span class="text-gray-900">{{ lead.date_added }}</span></p>
+            <p class="leading-relaxed text-base"><strong>Agent:</strong> {{ lead.agent }}</p>
+          {% endif %}
+        </div>
+
+        <div class="flex justify-center mt-6 space-x-4">
+          <a href="{% url 'leads:lead-list' %}" class="text-white bg-red-700 py-2 px-6 rounded-lg hover:bg-gray-400 transition">
+            Back
+          </a>
+          <a href="{% url 'leads:lead-update' lead.pk %}" class="text-white bg-red-700 py-2 px-6 rounded-lg hover:bg-gray-400 transition">
+            Update
+          </a>
+          <a href="{% url 'leads:lead-delete' lead.pk %}" class="text-white bg-black py-2 px-6 rounded-lg hover:bg-red-700 transition">
+            Delete
+          </a>
+          <form action="{% url 'leads:convert-lead' lead.id %}" method="POST">
+            {% csrf_token %}
+            <button type="submit" class="bg-gray-200 py-2 px-6 rounded-lg hover:bg-gray-300 transition">
+                Convert to Client
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+</section>
+
+{% endblock content %}

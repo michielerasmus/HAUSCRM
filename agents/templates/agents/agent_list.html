@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<section class="text-gray-600 body-font">
+    <div class="container mx-auto px-5 py-6 flex justify-between items-center border-b border-gray-200">
+        <h1 class="text-4xl font-bold text-gray-800">Agents</h1>
+        <a href="{% url 'agents:agent-create' %}"
+           class="bg-red-700 text-white px-4 py-2 rounded-lg hover:bg-gray-400 transition">
+            Create Agent
+        </a>
+    </div>
+
+    <div class="container px-5 py-12 mx-auto">
+        <div class="overflow-x-auto">
+            <table class="min-w-full leading-normal">
+                <thead>
+                    <tr>
+                        <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Name</th>
+                        <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Email</th>
+                        <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for agent in object_list %}
+                    <tr>
+                        <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">{{ agent.user.first_name }} {{ agent.user.last_name }}</td>
+                        <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">{{ agent.user.email }}</td>
+                        <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                            <a href="{% url 'agents:agent-detail' agent.pk %}" class="text-red-700 hover:underline">View</a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td class="px-5 py-5 text-gray-700 text-lg" colspan="3">No Agents</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
+{% endblock content %}

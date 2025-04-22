@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<section class="text-gray-600 body-font">
+    <div class="container mx-auto px-5 py-6 flex justify-between items-center border-b border-gray-200">
+        <h1 class="text-4xl font-bold text-gray-800">Clients</h1>
+        <div class="flex flex-col items-end">
+            <a href="{% url 'clients:client-create' %}"
+               class="bg-red-700 text-white px-4 py-2 rounded-lg hover:bg-gray-400 transition mb-2">
+                Create Client
+            </a>
+            <a href="{% url 'clients:upload-clients' %}"
+               class="bg-red-700 text-white px-4 py-2 rounded-lg hover:bg-gray-400 transition">
+                Upload Clients
+            </a>
+        </div>
+    </div>
+
+    <div class="container mx-auto px-5 py-6 bg-gray-100 rounded-lg flex justify-between items-center">
+        <form method="GET" class="flex flex-wrap items-center">
+            <input type="text" name="search" placeholder="Search Clients"
+                   value="{{ request.GET.search }}" class="p-2 border rounded-lg mr-2">
+
+            <input type="date" name="follow_up_date" value="{{ request.GET.follow_up_date }}" class="p-2 border rounded-lg mr-2">
+
+            <select name="role" class="p-2 border rounded-lg mr-2">
+                <option value="">All Clients</option>
+                <option value="Buyer" {% if request.GET.role == "Buyer" %}selected{% endif %}>Buyer</option>
+                <option value="Landlord" {% if request.GET.role == "Landlord" %}selected{% endif %}>Landlord</option>
+                <option value="Seller" {% if request.GET.role == "Seller" %}selected{% endif %}>Seller</option>
+                <option value="Tenant" {% if request.GET.role == "Tenant" %}selected{% endif %}>Tenant</option>
+                <option value="Potential Buyer" {% if request.GET.role == "Potential Buyer" %}selected{% endif %}>Potential Buyer</option>
+                <option value="Potential Landlord" {% if request.GET.role == "Potential Landlord" %}selected{% endif %}>Potential Landlord</option>
+                <option value="Potential Seller" {% if request.GET.role == "Potential Seller" %}selected{% endif %}>Potential Seller</option>
+                <option value="Potential Tenant" {% if request.GET.role == "Potential Tenant" %}selected{% endif %}>Potential Tenant</option>
+            </select>
+
+            <button type="submit" class="bg-red-700 text-white px-4 py-2 rounded-lg hover:bg-gray-400 transition">
+                Filter
+            </button>
+        </form>
+
+        <a href="{% url 'clients:client-export-excel' %}"
+           class="bg-gray-200 px-4 py-2 rounded-lg hover:bg-gray-400 transition">
+            Export to Excel
+        </a>
+    </div>
+
+    <div class="container px-5 py-12 mx-auto">
+        <div class="overflow-x-auto">
+            <table class="min-w-full leading-normal">
+                <thead>
+                    <tr>
+                        <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Name</th>
+                        <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Details</th>
+                        <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Phone</th>
+                        <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Birthday</th>
+                        {% if request.user.is_organisor %}
+                        <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Agent</th>
+                        {% endif %}
+                        <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for client in clients %}
+                    <tr>
+                        <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">{{ client.name }}</td>
+                        <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                            {% if client.detail %} {{ client.detail|truncatechars:50 }} {% endif %}
+                        </td>
+                        <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">{{ client.phone_number }}</td>
+                        <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">{{ client.birthday }}</td>
+                        {% if request.user.is_organisor %}
+                        <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">{{ client.agent }}</td>
+                        {% endif %}
+                        <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                            <a href="{% url 'clients:client-detail' client.pk %}" class="text-red-700 hover:underline">View</a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td class="px-5 py-5 text-gray-700 text-lg" colspan="{% if request.user.is_organisor %}6{% else %}5{% endif %}">No Clients</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
+{% endblock content %}

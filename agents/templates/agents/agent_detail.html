@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<section class="text-gray-600 body-font overflow-hidden flex items-center justify-center h-screen">
+    <div class="container px-5 py-12 mx-auto">
+      <div class="lg:w-3/5 mx-auto bg-white p-8 rounded-lg shadow-md">
+        <h1 class="text-gray-900 text-3xl title-font font-medium text-center mb-4">
+         Agent Details: {{ agent.user.username }}
+        </h1>
+
+        <p class="leading-relaxed mb-4 text-red-700 text-center text-lg font-bold">{{ agent.user.detail }}</p>
+
+        <div class="space-y-2 text-center">
+          <p class="text-gray-500"><strong>Email:</strong> <span class="text-gray-900">{{ agent.user.email }}</span></p>
+        </div>
+
+        <div class="flex justify-center mt-6 space-x-4">
+          <a href="{% url 'agents:agent-list' %}" class="text-white bg-red-700 py-2 px-6 rounded-lg hover:bg-gray-400 transition">
+            Back
+          </a>
+          <a href="{% url 'agents:agent-update' agent.pk %}" class="text-white bg-red-700 py-2 px-6 rounded-lg hover:bg-gray-400 transition">
+            Update
+          </a>
+          <a href="{% url 'agents:agent-delete' agent.pk %}" class="text-white bg-black py-2 px-6 rounded-lg hover:bg-red-700 transition">
+            Delete
+          </a>
+        </div>
+      </div>
+    </div>
+</section>
+
+{% endblock content %}

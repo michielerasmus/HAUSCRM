@@ -1,0 +1,154 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<section class="text-gray-600 body-font">
+    <div class="container mx-auto px-5 py-6 flex justify-between items-center border-b border-gray-200">
+        <h1 class="text-4xl font-bold text-gray-800">Sales</h1>
+        <a href="{% url 'sales:sale-create' %}"
+           class="bg-red-700 text-white px-4 py-2 rounded-lg hover:bg-gray-400 transition">
+            Create Sale
+        </a>
+    </div>
+
+    <div class="container mx-auto px-5 py-6 bg-gray-100 rounded-lg flex justify-between items-center">
+        <form method="GET" class="flex flex-wrap items-center">
+            <input type="text" name="search" placeholder="Search Sales"
+                   value="{{ request.GET.search }}" class="p-2 border rounded-lg mr-2">
+
+            <select name="status" class="p-2 border rounded-lg mr-2">
+                <option value="">All Sales</option>
+                <option value="New Mandate" {% if request.GET.status == "New Mandate" %}selected{% endif %}>New Mandate</option>
+                <option value="Offer" {% if request.GET.status == "Offer" %}selected{% endif %}>Offer</option>
+                <option value="Negotiation" {% if request.GET.status == "Negotiation" %}selected{% endif %}>Negotiation</option>
+                <option value="Contract" {% if request.GET.status == "Contract" %}selected{% endif %}>Contract</option>
+                <option value="At Transfer" {% if request.GET.status == "At Transfer" %}selected{% endif %}>At Transfer</option>
+                <option value="Deal Won" {% if request.GET.status == "Deal Won" %}selected{% endif %}>Deal Won</option>
+                <option value="Deal Lost" {% if request.GET.status == "Deal Lost" %}selected{% endif %}>Deal Lost</option>
+            </select>
+
+            <button type="submit" class="bg-red-700 text-white px-4 py-2 rounded-lg hover:bg-gray-400 transition">
+                Filter
+            </button>
+        </form>
+
+        <a href="{% url 'sales:sale-export-excel' %}"
+           class="bg-gray-200 px-4 py-2 rounded-lg hover:bg-gray-400 transition">
+            Export to Excel
+        </a>
+    </div>
+
+    <div class="container px-5 py-12 mx-auto">
+        <div class="sales-sections">
+
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">For Sale</h2>
+            <div class="overflow-x-auto">
+                <table class="min-w-full leading-normal">
+                    <thead>
+                        <tr>
+                            <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Address</th>
+                            <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Price</th>
+                            <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Status</th>
+                            <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for sale in sales %}
+                        {% if sale.status != "Deal Won" and sale.status != "Deal Lost" %}
+                        <tr>
+                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">{{ sale.address }}</td>
+                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                                {% if sale.sale_price %}
+                                Sold: R {{ sale.sale_price }}
+                                {% else %}
+                                For Sale: R {{ sale.listing_price }}
+                                {% endif %}
+                            </td>
+                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">{{ sale.status }}</td>
+                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                                <a href="{% url 'sales:sale-detail' sale.pk %}" class="text-red-700 hover:underline">View</a>
+                            </td>
+                        </tr>
+                        {% endif %}
+                        {% empty %}
+                        <tr>
+                            <td class="px-5 py-5 text-gray-700 text-lg" colspan="4">No Sales Available</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <h2 class="text-xl font-semibold text-gray-800 mb-4 mt-10">Sold (Deal Won)</h2>
+            <div class="overflow-x-auto">
+                <table class="min-w-full leading-normal">
+                    <thead>
+                        <tr>
+                            <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Address</th>
+                            <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Price</th>
+                            <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Status</th>
+                            <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for sale in sales %}
+                        {% if sale.status == "Deal Won" %}
+                        <tr>
+                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">{{ sale.address }}</td>
+                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">Sold: R {{ sale.sale_price }}</td>
+                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">{{ sale.status }}</td>
+                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                                <a href="{% url 'sales:sale-detail' sale.pk %}" class="text-red-700 hover:underline">View</a>
+                            </td>
+                        </tr>
+                        {% endif %}
+                        {% empty %}
+                        <tr>
+                            <td class="px-5 py-5 text-gray-700 text-lg" colspan="4">No Sales Sold</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <h2 class="text-xl font-semibold text-gray-800 mb-4 mt-10">Lost Sales (Deal Lost)</h2>
+            <div class="overflow-x-auto">
+                <table class="min-w-full leading-normal">
+                    <thead>
+                        <tr>
+                            <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Address</th>
+                            <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Status</th>
+                            <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Seller</th>
+                            <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for sale in sales %}
+                        {% if sale.status == "Deal Lost" %}
+                        <tr>
+                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">{{ sale.address }}</td>
+                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">{{ sale.status }}</td>
+                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                                {{ sale.seller_1 }}
+                                {% if sale.seller_2 %}
+                                & {{ sale.seller_2 }}
+                                {% endif %}
+                            </td>
+                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                                <a href="{% url 'sales:sale-detail' sale.pk %}" class="text-red-700 hover:underline">View</a>
+                            </td>
+                        </tr>
+                        {% endif %}
+                        {% empty %}
+                        <tr>
+                            <td class="px-5 py-5 text-gray-700 text-lg" colspan="4">No Lost Sales</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock content %}

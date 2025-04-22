@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<section class="text-gray-600 body-font overflow-hidden flex items-center justify-center h-screen">
+    <div class="container px-5 py-12 mx-auto">
+      <div class="lg:w-3/5 mx-auto bg-white p-8 rounded-lg shadow-md">
+        <h1 class="text-gray-900 text-3xl title-font font-medium text-center mb-4">
+         Rental Details: {{ rental.address }}
+        </h1>
+
+        <p class="leading-relaxed mb-4 text-red-700 text-center text-lg font-bold">
+          {% if rental.rental_price is not None and rental.rental_price != '' %}
+          Rented: R {{ rental.rental_price }}
+          {% else %}
+          To Let: R {{ rental.listing_price }}
+          {% endif %}
+        </p>
+
+        <div class="space-y-2 text-center">
+          <p class="text-gray-500"><strong>Address:</strong> <span class="text-gray-900">{{ rental.address }}, {{ rental.area }}, {{ rental.city }}</span></p>
+          <p class="leading-relaxed text-base"><strong>Rental Type:</strong> {{ rental.rental_type }}</p>
+          <p class="leading-relaxed text-base"><strong>Placement Commission:</strong> {{ rental.placement_commission_percentage }}%</p>
+          <p class="leading-relaxed text-base"><strong>Management Commission:</strong> {{ rental.management_commission_percentage }}%</p>
+          <p class="text-gray-500"><strong>Property Type:</strong> <span class="text-gray-900">{{ rental.property_type }}</span></p>
+          <p class="text-gray-500"><strong>Mandate Type:</strong> <span class="text-gray-900">{{ rental.mandate_type }}</span></p>
+          <p class="text-gray-500"><strong>Mandate Expiry:</strong> <span class="text-gray-900">{{ rental.mandate_expiry }}</span></p>
+          <p class="text-gray-500"><strong>Listing Date:</strong> <span class="text-gray-900">{{ rental.date_listed }}</span></p>
+
+          {% if rental.date_rented %}
+          <p class="text-gray-500"><strong>Date Rented:</strong> <span class="text-gray-900">{{ rental.date_rented }}</span></p>
+          <p class="text-gray-500"><strong>Rental Expiry:</strong> <span class="text-gray-900">{{ rental.rental_expiry }}</span></p>
+          {% endif %}
+          
+          {% if rental.landlord_1 %}
+          <p class="leading-relaxed text-base"><strong>Landlord 1:</strong> {{ rental.landlord_1 }}</p>
+          {% endif %}
+          
+          {% if rental.landlord_2 %}
+              <p class="leading-relaxed text-base"><strong>Landlord 2:</strong> {{ rental.landlord_2 }}</p>
+          {% endif %}
+          
+          {% if rental.tenant_1 %}
+              <p class="leading-relaxed text-base"><strong>Tenant 1:</strong> {{ rental.tenant_1 }}</p>
+          {% endif %}
+          
+          {% if rental.tenant_2 %}
+              <p class="leading-relaxed text-base"><strong>Tenant 2:</strong> {{ rental.tenant_2 }}</p>
+          {% endif %}
+
+          {% if request.user.is_organisor %}
+            <p class="leading-relaxed text-base"><strong>Agent:</strong> {{ rental.agent }}</p>
+          {% endif %}
+        </div>
+
+        <div class="flex justify-center mt-6 space-x-4">
+          <a href="{% url 'rentals:rental-list' %}" class="text-white bg-red-700 py-2 px-6 rounded-lg hover:bg-gray-400 transition">
+            Back
+          </a>
+          <a href="{% url 'rentals:rental-update' rental.pk %}" class="text-white bg-red-700 py-2 px-6 rounded-lg hover:bg-gray-400 transition">
+            Update
+          </a>
+          <a href="{% url 'rentals:rental-delete' rental.pk %}" class="text-white bg-black py-2 px-6 rounded-lg hover:bg-red-700 transition">
+            Delete
+          </a>
+        </div>
+      </div>
+    </div>
+</section>
+
+{% endblock content %}

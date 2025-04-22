@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<section class="text-gray-600 body-font">
+    <div class="container mx-auto px-5 py-6 flex justify-between items-center border-b border-gray-200">
+        <h1 class="text-4xl font-bold text-gray-800">Accountability Tracker</h1>
+        <a href="{% url 'tracker:tracker-create' %}" 
+           class="bg-red-700 text-white px-4 py-2 rounded-lg hover:bg-gray-400 transition">
+            Create Accountability Month
+        </a>
+    </div>
+
+    <!-- Filter Form -->
+    <div class="container mx-auto px-5 py-6 bg-gray-100 rounded-lg flex justify-between items-center">
+        <form method="GET" class="flex flex-wrap items-center">
+            <input type="text" name="search" placeholder="Search Tracker"
+                   value="{{ request.GET.search }}" class="p-2 border rounded-lg mr-2">
+            
+            <button type="submit" class="bg-red-700 text-white px-4 py-2 rounded-lg hover:bg-gray-400 transition">
+                Filter
+            </button>
+        </form>
+    </div>
+
+    <div class="container px-5 py-12 mx-auto">
+        <div class="flex flex-wrap -m-4">
+            {% for tracker in tracker %}
+            <div class="p-4 lg:w-1/2 md:w-full">
+                <div class="flex border-2 rounded-lg border-gray-200 p-8 sm:flex-row flex-col">
+                    <div class="w-16 h-16 sm:mr-8 sm:mb-0 mb-4 inline-flex items-center justify-center 
+                                rounded-full bg-gray-100 text-red-700 flex-shrink-0">
+                        <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                             class="w-8 h-8" viewBox="0 0 24 24">
+                            <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+                        </svg>
+                    </div>
+                    <div class="flex-grow">
+                        <h2 class="text-gray-900 text-lg title-font font-medium mb-3">{{ tracker.month }}</h2>
+                        {% if request.user.is_organisor %}
+                        <p class="leading-relaxed text-base"><strong>Agent:</strong> {{ tracker.agent }}</p>
+                        {% endif %}
+                        <p class="leading-relaxed text-base"><strong>Calls made:</strong> Target: 200 - My Calls: {{ tracker.calls_made|default_if_none:"0" }}</p>
+                        <p class="leading-relaxed text-base"><strong>Appointments:</strong> Target: 20 - My Appointemnts: {{ tracker.appointments_set|default_if_none:"0" }}</p>
+                        <p class="leading-relaxed text-base"><strong>Listings Secured:</strong> Target: 4 - My Listings: {{ tracker.listings_secured|default_if_none:"0" }}</p>
+                        <p class="leading-relaxed text-base"><strong>Showings Done:</strong> Target: 8 - My Showings: {{ tracker.showings_concluded|default_if_none:"0" }}</p>
+                        <p class="leading-relaxed text-base"><strong>Deals Closed:</strong> Target: 4 - My Deals: {{ tracker.deals_closed|default_if_none:"0" }}</p>
+                        <p class="leading-relaxed text-base"><strong>Follow Ups:</strong> Target: 40 - My Follow Ups: {{ tracker.follow_ups|default_if_none:"0" }}</p>
+                        <p class="leading-relaxed text-base"><strong>Social Media Posts:</strong> Target: 16 - My Social Posts: {{ tracker.social_media_posts|default_if_none:"0" }}</p>
+                        <p class="leading-relaxed text-base"><strong>Database Growth:</strong> Target: 16 - My Database Growth: {{ tracker.database_growth|default_if_none:"0" }}</p>
+                        {% if not request.user.is_organisor %}
+                        <a href="{% url 'tracker:tracker-update' tracker.pk %}" 
+                           class="mt-3 text-red-700 inline-flex items-center hover:underline">
+                            Update Stats
+                            <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" 
+                                 stroke-width="2" class="w-4 h-4 ml-2" viewBox="0 0 24 24">
+                                <path d="M5 12h14M12 5l7 7-7 7"></path>
+                            </svg>
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <p class="text-gray-700 text-lg">No Tracking Items</p>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+{% endblock content %}
